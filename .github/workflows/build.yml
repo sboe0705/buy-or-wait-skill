@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: Version für die Paketnamen
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # für git describe
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Shellcheck
+        run: shellcheck install.sh build.sh
+
+      - name: Build packages
+        run: ./build.sh "${{ inputs.version }}"
+
+      - name: Test install.sh
+        run: |
+          set -euo pipefail
+          target="$RUNNER_TEMP/skills"
+          ./install.sh --target "$target"
+          test -f "$target/buy-or-wait/SKILL.md"
+          test -x "$target/buy-or-wait/scripts/analyze.py"
+          test ! -e "$target/buy-or-wait/evals"
+          ./install.sh --target "$target"            # erneut: überschreibt sauber
+          ./install.sh --target "$target" --uninstall
+          test ! -e "$target/buy-or-wait"
+          ./install.sh --target "$target" --uninstall # idempotent
+
+      - name: Test install.sh from release bundle
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          unzip -q "$GITHUB_WORKSPACE"/dist/buy-or-wait-*.zip
+          ./buy-or-wait-*/install.sh --target "$RUNNER_TEMP/bundle-skills"
+          test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/SKILL.md"
+
+      - name: Smoke test against Yahoo Finance
+        continue-on-error: true  # externe API – soll den Build nicht blockieren
+        run: |
+          python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18 \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); v=d['vorbewertung']['empfehlung']; print(v); sys.exit(v != 'NICHT KAUFEN')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: buy-or-wait-skill
+          path: dist/
+          if-no-files-found: error
