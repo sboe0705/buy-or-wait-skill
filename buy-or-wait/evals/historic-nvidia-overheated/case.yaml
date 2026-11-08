@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: historic-nvidia-overheated
+expected_outcome: |
+  Die Empfehlung lautet NICHT KAUFEN, weil Nvidia am 18.06.2024 stark überhitzt war (RSI > 75, weit über SMA50).
