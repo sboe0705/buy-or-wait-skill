@@ -46,6 +46,8 @@ if errors:
 print(f"  SKILL.md ok (description {len(desc)} Zeichen)")
 EOF
 
+[[ -f "$ROOT/LICENSE" ]] || { echo "LICENSE fehlt" >&2; exit 1; }
+[[ -f "$SKILL_DIR/NOTICE" ]] || { echo "$SKILL_NAME/NOTICE fehlt" >&2; exit 1; }
 python3 -m py_compile "$SKILL_DIR"/scripts/*.py
 python3 "$SKILL_DIR/scripts/analyze.py" --help >/dev/null
 find "$SKILL_DIR" -name __pycache__ -type d -prune -exec rm -rf {} +
@@ -74,14 +76,19 @@ def add(z, path, arcname):
     info.compress_type = zipfile.ZIP_DEFLATED
     z.writestr(info, path.read_bytes())
 
+# LICENSE liegt im Repo-Root und kommt beim Packen in den Skill-Ordner
+license_file = root / "LICENSE"
+
 with zipfile.ZipFile(dist / f"{name}.skill", "w") as z:
     for p, rel in skill_files():
         add(z, p, rel)
+    add(z, license_file, pathlib.Path(name) / "LICENSE")
 
 bundle = f"{name}-{version}"
 with zipfile.ZipFile(dist / f"{bundle}.zip", "w") as z:
     for p, rel in skill_files():
         add(z, p, pathlib.Path(bundle) / rel)
+    add(z, license_file, pathlib.Path(bundle) / name / "LICENSE")
     add(z, root / "install.sh", pathlib.Path(bundle) / "install.sh")
 EOF
 

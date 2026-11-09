@@ -78,6 +78,10 @@ else
   # Ohne Testfälle und Build-Reste kopieren
   tar -C "$SOURCE_DIR" --exclude='./evals' --exclude='__pycache__' --exclude='*.pyc' -cf - . \
     | tar -C "$TARGET" -xf -
+  # Im Git-Repo liegt LICENSE im Root, im Release-Paket schon im Skill-Ordner
+  if [[ ! -f "$TARGET/LICENSE" && -f "$SCRIPT_DIR/LICENSE" ]]; then
+    cp "$SCRIPT_DIR/LICENSE" "$TARGET/LICENSE"
+  fi
   chmod +x "$TARGET/scripts/analyze.py" 2>/dev/null || true
   echo "✅ $SKILL_NAME installiert nach $TARGET"
 fi

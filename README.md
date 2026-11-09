@@ -63,3 +63,7 @@ Testfälle für Skill-Evals liegen unter `buy-or-wait/evals/` und werden nicht m
 ## Support
 
 Wenn dir dieser Skill nützlich ist, kannst du seine Weiterentwicklung mit einem Kaffee unterstützen: [buymeacoffee.com/sboe0705](https://buymeacoffee.com/sboe0705) ☕
+
+## Lizenz
+
+[Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. Die Skill-Pakete enthalten `LICENSE` und `NOTICE`.

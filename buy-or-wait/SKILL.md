@@ -1,6 +1,9 @@
 ---
 name: buy-or-wait
 description: Gibt für eine Aktie, einen ETF oder eine Kryptowährung eine klare Einstiegsempfehlung – KAUFEN, NICHT KAUFEN oder ABWARTEN – auf Basis des aktuellen Kurses und der jüngsten Kursentwicklung (Trend, Überhitzung, Dip, Volatilität), mit echten Kursdaten von Yahoo Finance. Verwende diesen Skill immer, wenn jemand wissen will, ob jetzt ein guter Zeitpunkt zum Kaufen/Einsteigen/Nachkaufen ist, ob etwas überbewertet oder heißgelaufen ist, ob man einen Dip kaufen soll oder lieber warten – z. B. "Soll ich jetzt Nvidia kaufen?", "Lohnt sich Bitcoin gerade?", "Ist der MSCI World gerade teuer?", "buy the dip bei Tesla?", "should I buy ETH now or wait?" – auch wenn das Wort "Skill" nicht fällt und nur ein Tickersymbol oder Name genannt wird.
+license: Apache-2.0
+metadata:
+  author: Sebastian Böhm
 ---
 
 # Buy or Wait

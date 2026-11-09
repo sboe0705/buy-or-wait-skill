@@ -9,8 +9,10 @@ Das Repo enthält genau einen Claude Skill: `buy-or-wait`. Er gibt für Aktien, 
 ```
 buy-or-wait/
   SKILL.md              Skill-Anleitung (Frontmatter + Ablauf), wird ausgeliefert
+  NOTICE                Urheber, Lizenz, Repo-Link, Support-Link; wird ausgeliefert
   scripts/analyze.py    Kursdaten holen, Kennzahlen + Vorbewertung als JSON
   evals/<case>/         Testfälle (case.yaml, prompt.md, graders/*.md), NICHT ausgeliefert
+LICENSE                 Apache-2.0; build.sh/install.sh packen sie in den Skill-Ordner
 install.sh              Lokale Installation nach ~/.claude/skills
 build.sh                Validierung + Pakete nach dist/
 .github/workflows/      build.yml (CI), release.yml (Tag v* → GitHub Release)
@@ -21,7 +23,9 @@ build.sh                Validierung + Pakete nach dist/
 - **Sprache:** Skill-Inhalte, Skript-Ausgaben, Kommentare und Shell-Meldungen sind auf Deutsch. Grader in `evals/` sind auf Englisch. Bleib bei der jeweiligen Sprache der Datei.
 - **Keine Abhängigkeiten:** `analyze.py` nutzt nur die Python-Standardbibliothek. Keine Pakete hinzufügen.
 - **JSON-Schlüssel** in der Skript-Ausgabe sind deutsch (`vorbewertung`, `empfehlung`, `signale`, `naechste_quartalszahlen`). Wenn du sie änderst, passe `SKILL.md` und den Smoke-Test in `build.yml` mit an.
-- **SKILL.md-Regeln** (von `build.sh` geprüft): `name: buy-or-wait`, `description` vorhanden, höchstens 1024 Zeichen, keine spitzen Klammern; Datei unter 500 Zeilen.
+- **SKILL.md-Regeln** (von `build.sh` geprüft): `name: buy-or-wait`, `description` vorhanden, höchstens 1024 Zeichen, keine spitzen Klammern; Datei unter 500 Zeilen. Außerdem `license: Apache-2.0` und `metadata.author`.
+- **Keine Links in `metadata`, kein Spendenlink in Texten, die der Agent liest** (`SKILL.md`, Skript-Ausgaben, künftige `references/`). Sonst landet er im Kontext und wird womöglich Nutzern gegenüber erwähnt. Der Buy-Me-a-Coffee-Link steht nur in `NOTICE`, `README.md` und `.github/FUNDING.yml`.
+- **LICENSE** nicht in den Skill-Ordner duplizieren: `build.sh` fügt sie beim Packen hinzu, `install.sh` beim Kopieren.
 - **Inhaltliche Leitplanken des Skills:** Er beantwortet nur die Timing-Frage. Keine Sparplan-/Tranchen-Vorschläge, keine erfundenen Kursziele. ABWARTEN ist der Normalfall. Die Evals prüfen das; nicht aufweichen.
 - **Shell-Skripte** müssen `shellcheck` bestehen (CI) und mit `set -euo pipefail` laufen.
 
