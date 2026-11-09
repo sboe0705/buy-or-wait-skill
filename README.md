@@ -54,7 +54,7 @@ Die Ausgabe ist JSON mit Kennzahlen und einer Vorbewertung (`vorbewertung.empfeh
 
 Prüft `SKILL.md` und die Skripte und baut `dist/buy-or-wait.zip`: den Skill-Ordner samt `LICENSE`, direkt als Skill importierbar. Der Dateiname ist versionsunabhängig, sodass `releases/latest/download/buy-or-wait.zip` immer auf den neuesten Build zeigt.
 
-Testfälle für Skill-Evals liegen unter `buy-or-wait/evals/` und werden nicht mit ausgeliefert. Ein Tag `v*` löst über GitHub Actions ein Release aus.
+Testfälle für Skill-Evals liegen unter `buy-or-wait/evals/` und werden nicht mit ausgeliefert. Ein Tag `v*` löst über GitHub Actions ein Release aus; `./release.sh` schlägt die nächste Version vor, prüft und pusht das Tag.
 
 ## Support
 

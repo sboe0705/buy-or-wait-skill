@@ -15,6 +15,7 @@ buy-or-wait/
 LICENSE                 Apache-2.0; build.sh/install.sh packen sie in den Skill-Ordner
 install.sh              Lokale Installation nach ~/.claude/skills
 build.sh                Validierung + dist/buy-or-wait.zip
+release.sh              Nächste Version vorschlagen, prüfen, Tag vX.Y.Z pushen
 .github/workflows/      build.yml (CI), release.yml (Tag v* → GitHub Release)
 ```
 
@@ -34,7 +35,7 @@ build.sh                Validierung + dist/buy-or-wait.zip
 Vor jedem Commit:
 
 ```bash
-shellcheck install.sh build.sh
+shellcheck install.sh build.sh release.sh
 ./build.sh
 ```
 
@@ -52,7 +53,7 @@ Jeder Fall unter `buy-or-wait/evals/<name>/` besteht aus `case.yaml` (mit `expec
 
 ## Release
 
-Tag `vX.Y.Z` pushen; `release.yml` baut und veröffentlicht `dist/buy-or-wait.zip` (versionsunabhängiger Name). Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
+`./release.sh` schlägt anhand der Commits seit dem letzten Tag die nächste Version vor, prüft mit `shellcheck` und `./build.sh` und pusht das Tag (`--dry-run` zum Ausprobieren, `--help` für alle Optionen). Alternativ Tag `vX.Y.Z` von Hand pushen. `release.yml` baut und veröffentlicht `dist/buy-or-wait.zip` (versionsunabhängiger Name). Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
 
 ## Git-Workflow
 

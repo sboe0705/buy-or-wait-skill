@@ -21,7 +21,7 @@ jobs:
           python-version: "3.x"
 
       - name: Shellcheck
-        run: shellcheck install.sh build.sh
+        run: shellcheck install.sh build.sh release.sh
 
       - name: Build zip
         run: ./build.sh

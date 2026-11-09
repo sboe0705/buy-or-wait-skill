@@ -35,7 +35,7 @@ jobs:
           done
 
       - name: Shellcheck
-        run: shellcheck install.sh build.sh
+        run: shellcheck install.sh build.sh release.sh
 
       - name: Check analyze.py
         run: python3 buy-or-wait/scripts/analyze.py --help >/dev/null
