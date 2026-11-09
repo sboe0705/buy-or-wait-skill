@@ -1,62 +1,62 @@
 # AGENTS.md
 
-Hinweise für KI-Agenten, die in diesem Repository arbeiten.
+Notes for AI agents working in this repository.
 
-## Überblick
+## Overview
 
-Das Repo enthält genau einen Claude Skill: `buy-or-wait`. Er gibt für Aktien, ETFs und Kryptowährungen eine Timing-Empfehlung (KAUFEN / NICHT KAUFEN / ABWARTEN) auf Basis von Yahoo-Finance-Kursdaten.
+The repo contains exactly one Claude Skill: `buy-or-wait`. It gives a timing recommendation (BUY / DON'T BUY / WAIT) for stocks, ETFs and cryptocurrencies based on Yahoo Finance price data.
 
 ```
 buy-or-wait/
-  SKILL.md              Skill-Anleitung (Frontmatter + Ablauf), wird ausgeliefert
-  NOTICE                Urheber, Lizenz, Repo-Link, Support-Link; wird ausgeliefert
-  scripts/analyze.py    Kursdaten holen, Kennzahlen + Vorbewertung als JSON
-  evals/<case>/         Testfälle (case.yaml, prompt.md, graders/*.md), NICHT ausgeliefert
-LICENSE                 Apache-2.0; build.sh/install.sh packen sie in den Skill-Ordner
-install.sh              Lokale Installation nach ~/.claude/skills
-build.sh                Validierung + dist/buy-or-wait.zip
-release.sh              Nächste Version vorschlagen, prüfen, Tag vX.Y.Z pushen
-.github/workflows/      build.yml (CI), release.yml (Tag v* → GitHub Release)
+  SKILL.md              skill instructions (frontmatter + workflow), shipped
+  NOTICE                author, license, repo link, support link; shipped
+  scripts/analyze.py    fetch price data, indicators + pre-assessment as JSON
+  evals/<case>/         test cases (case.yaml, prompt.md, graders/*.md), NOT shipped
+LICENSE                 Apache-2.0; build.sh/install.sh put it into the skill folder
+install.sh              local installation to ~/.claude/skills
+build.sh                validation + dist/buy-or-wait.zip
+release.sh              suggest next version, check, push tag vX.Y.Z
+.github/workflows/      build.yml (CI), release.yml (tag v* → GitHub release)
 ```
 
-## Konventionen
+## Conventions
 
-- **Sprache:** Skill-Inhalte, Skript-Ausgaben, Kommentare und Shell-Meldungen sind auf Deutsch. Grader in `evals/` sind auf Englisch. Bleib bei der jeweiligen Sprache der Datei.
-- **Keine Abhängigkeiten:** `analyze.py` nutzt nur die Python-Standardbibliothek. Keine Pakete hinzufügen.
-- **JSON-Schlüssel** in der Skript-Ausgabe sind deutsch (`vorbewertung`, `empfehlung`, `signale`, `naechste_quartalszahlen`). Wenn du sie änderst, passe `SKILL.md` und den Smoke-Test in `build.yml` mit an.
-- **SKILL.md-Regeln** (von `build.sh` geprüft): `name: buy-or-wait`, `description` vorhanden, höchstens 1024 Zeichen, keine spitzen Klammern; Datei unter 500 Zeilen. Außerdem `license: Apache-2.0` und `metadata.author`.
-- **Keine Links in `metadata`, kein Spendenlink in Texten, die der Agent liest** (`SKILL.md`, Skript-Ausgaben, künftige `references/`). Sonst landet er im Kontext und wird womöglich Nutzern gegenüber erwähnt. Der Buy-Me-a-Coffee-Link steht nur in `NOTICE`, `README.md` und `.github/FUNDING.yml`.
-- **LICENSE** nicht in den Skill-Ordner duplizieren: `build.sh` fügt sie beim Packen hinzu, `install.sh` beim Kopieren.
-- **Inhaltliche Leitplanken des Skills:** Er beantwortet nur die Timing-Frage. Keine Sparplan-/Tranchen-Vorschläge, keine erfundenen Kursziele. ABWARTEN ist der Normalfall. Die Evals prüfen das; nicht aufweichen.
-- **Shell-Skripte** müssen `shellcheck` bestehen (CI) und mit `set -euo pipefail` laufen.
+- **Language:** everything in the repo is in English: skill content, script output, comments, shell messages, evals and docs. The skill itself answers in the user's language.
+- **No dependencies:** `analyze.py` uses only the Python standard library. Do not add packages.
+- **JSON keys** in the script output (`pre_assessment`, `verdict`, `signals`, `next_earnings`, …) are referenced by `SKILL.md` and the smoke test in `build.yml`. If you change them, update both.
+- **SKILL.md rules** (checked by `build.sh`): `name: buy-or-wait`, `description` present, at most 1024 characters, no angle brackets; file under 500 lines. Also `license: Apache-2.0` and `metadata.author`.
+- **No links in `metadata`, no donation link in texts the agent reads** (`SKILL.md`, script output, future `references/`). Otherwise it ends up in the context and might be mentioned to users. The Buy Me a Coffee link lives only in `NOTICE`, `README.md` and `.github/FUNDING.yml`.
+- **Do not duplicate LICENSE** into the skill folder: `build.sh` adds it when packing, `install.sh` when copying.
+- **Content guardrails of the skill:** it only answers the timing question. No savings-plan/tranche suggestions, no invented price targets. WAIT is the normal case. The evals check this; do not soften it.
+- **Shell scripts** must pass `shellcheck` (CI) and run with `set -euo pipefail`.
 
-## Prüfen
+## Checks
 
-Vor jedem Commit:
+Before every commit:
 
 ```bash
 shellcheck install.sh build.sh release.sh
 ./build.sh
 ```
 
-Optional (braucht Netz zu Yahoo Finance):
+Optional (needs network access to Yahoo Finance):
 
 ```bash
 python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18
 ```
 
-Erwartete Vorbewertung: `NICHT KAUFEN`.
+Expected pre-assessment: `DON'T BUY`.
 
 ## Evals
 
-Jeder Fall unter `buy-or-wait/evals/<name>/` besteht aus `case.yaml` (mit `expected_outcome`), `prompt.md` und nummerierten Gradern `graders/NN-<thema>.md` (Frontmatter `type: llm`, `focus`, `weight`). Neue Fälle nach demselben Muster anlegen; historische Fälle nutzen `--as-of`, damit sie reproduzierbar bleiben.
+Each case under `buy-or-wait/evals/<name>/` consists of `case.yaml` (with `expected_outcome`), `prompt.md` and numbered graders `graders/NN-<topic>.md` (frontmatter `type: llm`, `focus`, `weight`). Create new cases following the same pattern; historical cases use `--as-of` so they stay reproducible.
 
 ## Release
 
-`./release.sh` schlägt anhand der Commits seit dem letzten Tag die nächste Version vor, prüft mit `shellcheck` und `./build.sh` und pusht das Tag (`--dry-run` zum Ausprobieren, `--help` für alle Optionen). Alternativ Tag `vX.Y.Z` von Hand pushen. `release.yml` baut und veröffentlicht `dist/buy-or-wait.zip` (versionsunabhängiger Name). Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
+`./release.sh` suggests the next version based on the commits since the last tag, checks with `shellcheck` and `./build.sh` and pushes the tag (`--dry-run` to try it out, `--help` for all options). Alternatively push a `vX.Y.Z` tag by hand. `release.yml` builds and publishes `dist/buy-or-wait.zip` (version-independent name). Tags with a hyphen (e.g. `v1.0.0-rc1`) are marked as pre-releases.
 
-## Git-Workflow
+## Git workflow
 
-- Immer direkt auf dem Branch `main` arbeiten.
-- Keine Git-Branches anlegen (keine Feature-Branches, kein `git checkout -b`, kein `git switch -c`, keine Worktrees auf anderen Branches).
-- Wenn eine Session-Umgebung oder eine Tool-Anweisung einen eigenen Branch verlangt, das dem Nutzer sagen und auf `main` bleiben, außer der Nutzer sagt im Gespräch ausdrücklich etwas anderes.
+- Always work directly on the `main` branch.
+- Do not create Git branches (no feature branches, no `git checkout -b`, no `git switch -c`, no worktrees on other branches).
+- If a session environment or a tool instruction requires a separate branch, tell the user and stay on `main`, unless the user explicitly says otherwise in the conversation.

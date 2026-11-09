@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Installiert den buy-or-wait Skill für den aktuellen Benutzer (Claude Code).
+# Installs the buy-or-wait skill for the current user (Claude Code).
 #
-#   ./install.sh               Skill nach ~/.claude/skills/buy-or-wait kopieren
-#   ./install.sh --link        Symlink statt Kopie (für Entwicklung im Repo)
-#   ./install.sh --uninstall   Skill wieder entfernen
-#   ./install.sh --target DIR  anderes Skills-Verzeichnis verwenden
+#   ./install.sh               copy the skill to ~/.claude/skills/buy-or-wait
+#   ./install.sh --link        symlink instead of copy (for development in the repo)
+#   ./install.sh --uninstall   remove the skill again
+#   ./install.sh --target DIR  use a different skills directory
 #
-# Funktioniert aus dem Git-Repo und aus dem entpackten Release-Paket.
+# Works from the Git repo and from the unpacked release package.
 set -euo pipefail
 
 SKILL_NAME="buy-or-wait"
@@ -25,10 +25,10 @@ while [[ $# -gt 0 ]]; do
     --uninstall) MODE="uninstall" ;;
     --link)      LINK=1 ;;
     --target)
-      [[ $# -ge 2 ]] || { echo "Fehler: --target braucht ein Verzeichnis" >&2; exit 2; }
+      [[ $# -ge 2 ]] || { echo "Error: --target requires a directory" >&2; exit 2; }
       TARGET_ROOT="$2"; shift ;;
     -h|--help)   usage; exit 0 ;;
-    *) echo "Unbekannte Option: $1" >&2; usage >&2; exit 2 ;;
+    *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
   shift
 done
@@ -39,32 +39,32 @@ remove_existing() {
   if [[ -L "$TARGET" ]]; then
     rm "$TARGET"
   elif [[ -d "$TARGET" ]]; then
-    # Nur löschen, was wie unser Skill aussieht – nie ein fremdes Verzeichnis.
+    # Only delete what looks like our skill – never someone else's directory.
     if [[ ! -f "$TARGET/SKILL.md" ]] || ! grep -q "^name: $SKILL_NAME\$" "$TARGET/SKILL.md"; then
-      echo "Fehler: $TARGET existiert, ist aber nicht der $SKILL_NAME Skill. Abbruch." >&2
+      echo "Error: $TARGET exists but is not the $SKILL_NAME skill. Aborting." >&2
       exit 1
     fi
     rm -rf "$TARGET"
   elif [[ -e "$TARGET" ]]; then
-    echo "Fehler: $TARGET existiert und ist kein Verzeichnis. Abbruch." >&2
+    echo "Error: $TARGET exists and is not a directory. Aborting." >&2
     exit 1
   fi
 }
 
 if [[ "$MODE" == "uninstall" ]]; then
   if [[ ! -e "$TARGET" && ! -L "$TARGET" ]]; then
-    echo "Nicht installiert: $TARGET"
+    echo "Not installed: $TARGET"
     exit 0
   fi
   remove_existing
-  echo "✅ $SKILL_NAME entfernt ($TARGET)"
+  echo "✅ $SKILL_NAME removed ($TARGET)"
   exit 0
 fi
 
-[[ -f "$SOURCE_DIR/SKILL.md" ]] || { echo "Fehler: $SOURCE_DIR/SKILL.md nicht gefunden" >&2; exit 1; }
+[[ -f "$SOURCE_DIR/SKILL.md" ]] || { echo "Error: $SOURCE_DIR/SKILL.md not found" >&2; exit 1; }
 
 if ! command -v python3 >/dev/null 2>&1; then
-  echo "⚠️  python3 nicht gefunden – der Skill braucht Python 3 für die Kursanalyse." >&2
+  echo "⚠️  python3 not found – the skill needs Python 3 for the price analysis." >&2
 fi
 
 mkdir -p "$TARGET_ROOT"
@@ -72,17 +72,17 @@ remove_existing
 
 if [[ "$LINK" -eq 1 ]]; then
   ln -s "$SOURCE_DIR" "$TARGET"
-  echo "✅ $SKILL_NAME verlinkt: $TARGET -> $SOURCE_DIR"
+  echo "✅ $SKILL_NAME linked: $TARGET -> $SOURCE_DIR"
 else
   mkdir -p "$TARGET"
-  # Ohne Testfälle und Build-Reste kopieren
+  # Copy without test cases and build leftovers
   tar -C "$SOURCE_DIR" --exclude='./evals' --exclude='__pycache__' --exclude='*.pyc' -cf - . \
     | tar -C "$TARGET" -xf -
-  # Im Git-Repo liegt LICENSE im Root, im Release-Paket schon im Skill-Ordner
+  # In the Git repo LICENSE is in the root, in the release package already in the skill folder
   if [[ ! -f "$TARGET/LICENSE" && -f "$SCRIPT_DIR/LICENSE" ]]; then
     cp "$SCRIPT_DIR/LICENSE" "$TARGET/LICENSE"
   fi
   chmod +x "$TARGET/scripts/analyze.py" 2>/dev/null || true
-  echo "✅ $SKILL_NAME installiert nach $TARGET"
+  echo "✅ $SKILL_NAME installed to $TARGET"
 fi
-echo "   Neue Claude-Code-Sitzungen erkennen den Skill automatisch."
+echo "   New Claude Code sessions pick up the skill automatically."

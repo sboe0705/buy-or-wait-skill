@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The recommendation is KAUFEN.
+The recommendation is BUY.

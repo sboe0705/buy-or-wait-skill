@@ -5,4 +5,4 @@ timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
 ---
 
-Ich überlege, 5000 € als Einmalanlage in den iShares Core MSCI World ETF zu stecken. Ist gerade ein guter Zeitpunkt oder sollte ich lieber noch abwarten?
+I'm thinking about putting €5,000 as a lump sum into the iShares Core MSCI World ETF. Is now a good time, or should I rather wait?

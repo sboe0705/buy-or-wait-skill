@@ -1,6 +1,6 @@
 ---
 name: buy-or-wait
-description: Gibt für eine Aktie, einen ETF oder eine Kryptowährung eine klare Einstiegsempfehlung – KAUFEN, NICHT KAUFEN oder ABWARTEN – auf Basis des aktuellen Kurses und der jüngsten Kursentwicklung (Trend, Überhitzung, Dip, Volatilität), mit echten Kursdaten von Yahoo Finance. Verwende diesen Skill immer, wenn jemand wissen will, ob jetzt ein guter Zeitpunkt zum Kaufen/Einsteigen/Nachkaufen ist, ob etwas überbewertet oder heißgelaufen ist, ob man einen Dip kaufen soll oder lieber warten – z. B. "Soll ich jetzt Nvidia kaufen?", "Lohnt sich Bitcoin gerade?", "Ist der MSCI World gerade teuer?", "buy the dip bei Tesla?", "should I buy ETH now or wait?" – auch wenn das Wort "Skill" nicht fällt und nur ein Tickersymbol oder Name genannt wird.
+description: Gives a clear entry recommendation for a stock, ETF or cryptocurrency – BUY, DON'T BUY or WAIT – based on the current price and recent price action (trend, overheating, dip, volatility), using real price data from Yahoo Finance. Always use this skill when someone wants to know whether now is a good time to buy, get in or add to a position, whether something is overvalued or has run too hot, or whether to buy a dip or rather wait – e.g. "Should I buy Nvidia now?", "Is Bitcoin worth it right now?", "Is the MSCI World expensive at the moment?", "buy the dip on Tesla?", "should I buy ETH now or wait?" – in any language, even if the word "skill" is not mentioned and only a ticker symbol or name is given.
 license: Apache-2.0
 metadata:
   author: Sebastian Böhm
@@ -8,124 +8,122 @@ metadata:
 
 # Buy or Wait
 
-Ziel: eine nachvollziehbare, ehrliche Einschätzung des **Einstiegszeitpunkts** für einen
-Anlagehorizont von **einigen Wochen bis Monaten**. Es geht nicht darum, ob ein Unternehmen
-grundsätzlich gut ist, sondern ob *jetzt* ein günstiger Moment zum Kaufen ist.
+Goal: a transparent, honest assessment of the **entry timing** for an investment horizon of
+**a few weeks to months**. The question is not whether a company is fundamentally good, but
+whether *now* is a favorable moment to buy.
 
-Die drei möglichen Ergebnisse:
+The three possible outcomes:
 
-| Empfehlung | Bedeutung | Typische Lage |
+| Verdict | Meaning | Typical situation |
 |---|---|---|
-| 🟢 **KAUFEN** | Guter Einstieg wahrscheinlich | Rücksetzer (Dip) in einem intakten Aufwärtstrend, Kurs stabilisiert sich bereits |
-| 🔴 **NICHT KAUFEN** | Kurs vermutlich heißgelaufen | Steiler Anstieg, stark überkauft, weit über den Durchschnitten – Rückschlag wahrscheinlicher als weiterer Sprint |
-| 🟡 **ABWARTEN** | Keine klare Chance | Gemischte Signale, Seitwärtsphase, fallendes Messer ohne Bodenbildung, extreme Unsicherheit |
+| 🟢 **BUY** | Good entry likely | Pullback (dip) within an intact uptrend, price is already stabilizing |
+| 🔴 **DON'T BUY** | Price has probably run too hot | Steep rise, heavily overbought, far above the averages – a setback is more likely than another sprint |
+| 🟡 **WAIT** | No clear opportunity | Mixed signals, sideways phase, falling knife without a bottom, extreme uncertainty |
 
-ABWARTEN ist der Normalfall und keine Verlegenheitsantwort: Meistens gibt es weder einen
-klaren Dip noch eine klare Überhitzung. Eine Kaufempfehlung soll etwas bedeuten, deshalb
-gibt es sie nur, wenn die Lage wirklich günstig aussieht.
+WAIT is the normal case, not a cop-out: most of the time there is neither a clear dip nor
+clear overheating. A buy recommendation should mean something, so it is only given when the
+situation really looks favorable.
 
-## Ablauf
+## Workflow
 
-### 1. Symbol bestimmen
+### 1. Determine the symbol
 
-Das Skript braucht ein Yahoo-Finance-Symbol. Beispiele: `AAPL`, `NVDA`, `SAP.DE`, `RHM.DE`,
+The script needs a Yahoo Finance symbol. Examples: `AAPL`, `NVDA`, `SAP.DE`, `RHM.DE`,
 `EUNL.DE` (iShares Core MSCI World, Xetra), `VWCE.DE`, `BTC-EUR`, `ETH-EUR`, `SOL-EUR`.
 
-- Nennt die Person einen Namen statt eines Symbols, suche:
+- If the person gives a name instead of a symbol, search:
   `python3 <skill-dir>/scripts/analyze.py --search "Rheinmetall"`
-- Wähle die Hauptnotierung: bei deutschen Werten und europäischen UCITS-ETFs die Xetra-Notierung
-  (`.DE`), bei US-Aktien das US-Symbol ohne Suffix. Bei Krypto `-EUR`, außer die Person spricht
-  in Dollar. OTC-Ableger (z. B. `RNMBY`) meiden.
-- Gibt die Person eine ISIN oder WKN an, versuche die Suche damit; klappt das nicht, frag nach
-  dem Namen.
-- Ist unklar, welches Wertpapier gemeint ist (z. B. "der Vanguard ETF"), frag kurz nach,
-  statt zu raten – eine Empfehlung zum falschen Papier ist schlimmer als eine Rückfrage.
+- Pick the main listing: for German stocks and European UCITS ETFs the Xetra listing
+  (`.DE`), for US stocks the US symbol without suffix. For crypto use `-EUR`, unless the person
+  talks in dollars (then `-USD`). Avoid OTC listings (e.g. `RNMBY`).
+- If the person gives an ISIN or WKN, try searching with it; if that fails, ask for the name.
+- If it is unclear which security is meant (e.g. "the Vanguard ETF"), ask briefly instead of
+  guessing – a recommendation for the wrong security is worse than a follow-up question.
 
-### 2. Analyse ausführen
+### 2. Run the analysis
 
 ```bash
 python3 <skill-dir>/scripts/analyze.py <SYMBOL>
 ```
 
-Das Skript holt ~2 Jahre Tageskurse und liefert JSON mit Performance, gleitenden Durchschnitten
-(SMA20/50/200), RSI(14), Abstand zu Hochs/Tiefs, Volatilität und einer regelbasierten
-**Vorbewertung** (`vorbewertung.empfehlung`, `score`, Liste der `signale` mit Punkten).
-Bei Fehlern (z. B. HTTP 404) ist das Symbol meist falsch → Suche nutzen.
+The script fetches ~2 years of daily prices and returns JSON with performance, moving averages
+(SMA20/50/200), RSI(14), distance to highs/lows, volatility and a rule-based
+**pre-assessment** (`pre_assessment.verdict`, `score`, list of `signals` with points).
+On errors (e.g. HTTP 404) the symbol is usually wrong → use the search.
 
-Bei mehreren Werten in einer Frage: für jeden einzeln ausführen und jeweils bewerten.
+For several securities in one question: run it for each one and assess each separately.
 
-Fragt die Person nach einem vergangenen Zeitpunkt ("Hätte ich im Juni 2024 kaufen sollen?"),
-nutze `--as-of YYYY-MM-DD`. Dann zählen nur Kurse bis zu diesem Tag, und Quartalszahlen-Termine
-werden nicht abgefragt. Bewerte so, als wäre heute dieser Tag. Den späteren Kursverlauf darfst
-du danach in einem Satz als Auflösung ergänzen, wenn die Person danach fragt oder es offensichtlich
-interessiert.
+If the person asks about a past point in time ("Should I have bought in June 2024?"), use
+`--as-of YYYY-MM-DD`. Then only prices up to that day count, and earnings dates are not
+fetched. Assess as if today were that day. Afterwards you may add the later price development
+in one sentence as the resolution, if the person asks for it or is obviously interested.
 
-### 3. Bewerten
+### 3. Assess
 
-Die Vorbewertung des Skripts ist der Ausgangspunkt. Sie ist bewusst einfach und transparent
-gehalten. Übernimm sie im Normalfall; weiche nur ab, wenn die Zahlen erkennbar etwas zeigen,
-das die Regeln nicht abbilden – und sag dann offen, warum.
+The script's pre-assessment is the starting point. It is deliberately simple and transparent.
+Adopt it in the normal case; only deviate if the numbers clearly show something the rules do
+not capture – and then say openly why.
 
-Worauf die Regeln achten, damit du die Signale erklären kannst:
+What the rules look at, so you can explain the signals:
 
-- **Trend (SMA200):** Kurs über einem *steigenden* 200-Tage-Durchschnitt = intakter
-  Aufwärtstrend. Ein Dip darin wird oft wieder gekauft. Unter einem *fallenden* SMA200 ist ein
-  Kursrückgang dagegen oft Teil eines größeren Abwärtstrends ("fallendes Messer").
-- **Stretch:** Abstand zum SMA50, geteilt durch die Monatsvolatilität. Dadurch sind ruhige ETFs
-  und wilde Kryptos vergleichbar: +8 % über dem SMA50 ist für einen MSCI World extrem, für
-  Bitcoin normal. Über ~1,5 = stark gestreckt, unter ~−1 = deutlicher Rücksetzer.
-- **RSI(14):** über ~70 überkauft, unter ~30 überverkauft.
-- **Anstieg in Sigma:** Monatsrendite im Verhältnis zur üblichen Schwankung; über 2 heißt
-  "ungewöhnlich steil".
-- **Stabilisierung:** keine neuen Tiefs in den letzten 5 Tagen. Ohne Stabilisierung ist ein
-  Dip noch nicht vorbei – dann lieber ABWARTEN, auch wenn der Kurs "billig" aussieht.
-- **Volatilitätsregime:** Ist die aktuelle Schwankung deutlich höher als im Jahresschnitt,
-  ist die Prognose unsicherer.
+- **Trend (SMA200):** price above a *rising* 200-day average = intact uptrend. A dip within it
+  is often bought back. Below a *falling* SMA200, on the other hand, a price decline is often
+  part of a larger downtrend ("falling knife").
+- **Stretch:** distance to the SMA50 divided by the monthly volatility. This makes calm ETFs
+  and wild cryptos comparable: +8 % above the SMA50 is extreme for an MSCI World, normal for
+  Bitcoin. Above ~1.5 = heavily stretched, below ~−1 = clear pullback.
+- **RSI(14):** above ~70 overbought, below ~30 oversold.
+- **Rise in sigma:** monthly return relative to the usual fluctuation; above 2 means
+  "unusually steep".
+- **Stabilization:** no new lows in the last 5 days. Without stabilization a dip is not over
+  yet – then rather WAIT, even if the price looks "cheap".
+- **Volatility regime:** if current volatility is clearly higher than the yearly average, the
+  forecast is less certain.
 
-- **Quartalszahlen:** Bei Aktien liefert das Skript `naechste_quartalszahlen` (Datum, Tage bis
-  dahin). Liegen sie innerhalb von ~2 Wochen, ist das ein Ereignisrisiko: Die Zahlen können den
-  Kurs kräftig in beide Richtungen bewegen. Nenn den Termin dann immer in der Antwort – auch
-  wenn er die Empfehlung nicht kippt. Ist das Feld `null` (ETF, Krypto oder kein Termin
-  abrufbar), lass das Thema weg.
+- **Earnings:** for stocks the script returns `next_earnings` (date, days until then). If they
+  are within ~2 weeks, that is an event risk: the results can move the price sharply in either
+  direction. Always mention the date in the answer then – even if it does not flip the
+  verdict. If the field is `null` (ETF, crypto or no date available), leave the topic out.
 
-Grenzen, die du ehrlich benennen solltest: Das ist reine Kurs- bzw. Chartanalyse. Ob ein
-Einbruch einen fundamentalen Grund hat (schlechte Zahlen, Skandal, Gewinnwarnung), sieht das
-Skript nicht. Meldet es einen "außergewöhnlich starken Einbruch", weise darauf hin, dass die
-Person die Ursache prüfen sollte, bevor sie kauft.
+Limits you should name honestly: this is pure price/chart analysis. Whether a crash has a
+fundamental reason (bad results, scandal, profit warning) is invisible to the script. If it
+reports an "exceptionally sharp drop", point out that the person should check the cause
+before buying.
 
-### 4. Antwort formulieren
+### 4. Write the answer
 
-Antworte in der Sprache der Person (meist Deutsch), kurz und klar. Struktur:
+Answer in the person's language, short and clear. Translate the verdict label into that
+language if it is not English (e.g. German: KAUFEN / NICHT KAUFEN / ABWARTEN). Structure:
 
 ```
-## <Emoji> <EMPFEHLUNG> – <Name> (<Symbol>)
+## <Emoji> <VERDICT> – <Name> (<Symbol>)
 
-**Kurs:** <Kurs> <Währung> (Stand <Datum>) · 1 Monat <±x %> · 3 Monate <±x %> · 1 Jahr <±x %>
-<nur bei Aktien mit Zahlen in ≤ 14 Tagen: **📅 Quartalszahlen am <Datum> (in <n> Tagen)** – kurz, was das bedeutet>
+**Price:** <price> <currency> (as of <date>) · 1 month <±x %> · 3 months <±x %> · 1 year <±x %>
+<only for stocks with earnings in ≤ 14 days: **📅 Earnings on <date> (in <n> days)** – briefly what that means>
 
-**Kurz gesagt:** <ein bis zwei Sätze, warum – in Alltagssprache>
+**In short:** <one or two sentences on why – in plain language>
 
-**Die Signale:**
-- <2–5 wichtigste Signale, mit konkreten Zahlen, verständlich erklärt>
+**The signals:**
+- <2–5 most important signals, with concrete numbers, explained clearly>
 
-**Was die Lage ändern würde:** <konkret, mit Kursmarken wo möglich – z. B. "Ein Rücksetzer
-Richtung SMA50 (~185 USD) wäre ein besserer Einstieg" oder "Erst wenn der Kurs wieder über
-dem SMA200 (~41.000 EUR) schließt, …">
+**What would change the picture:** <concrete, with price levels where possible – e.g. "A
+pullback towards the SMA50 (~185 USD) would be a better entry" or "Only once the price closes
+above the SMA200 (~41,000 EUR) again, …">
 
-<Eine Zeile Hinweis: keine Anlageberatung, reine Kursanalyse ohne Fundamentaldaten/News.>
+<One line of disclaimer: not investment advice, pure price analysis without fundamentals/news.>
 ```
 
-Hinweise zum Ton:
-- Zahlen runden (eine Nachkommastelle reicht) und Fachbegriffe beim ersten Auftreten kurz
-  erklären ("RSI 78 – ein Wert über 70 gilt als überkauft").
-- Die Empfehlung nicht verwässern. Wenn das Ergebnis KAUFEN ist, sag es klar – mit dem
-  Risiko dazu. Wenn es ABWARTEN ist, erklär, worauf man warten sollte.
-- Der Abschnitt "Was die Lage ändern würde" ist der nützlichste Teil für die Person, denn
-  er macht aus einem "Nein" einen Plan.
-- Keine Kursziele oder Wahrscheinlichkeiten erfinden, die nicht aus den Daten folgen.
-- **Bleib bei der Timing-Frage.** Die Person will eine schnelle Entscheidungshilfe für den
-  Einstiegszeitpunkt – keine allgemeine Anlageberatung. Schlag deshalb keine Ausweichstrategien
-  wie Sparplan, Cost-Average oder "in Tranchen kaufen" vor, und halte keine Vorträge über
-  Risikostreuung, Notgroschen, Steuern oder "Timing funktioniert nicht". Wer diesen Skill nutzt,
-  kennt die Risiken und hat sich bewusst für eine Einmal-Entscheidung entschieden. Die Antwort
-  soll die Frage "jetzt kaufen oder nicht?" beantworten, nicht eine andere.
+Notes on tone:
+- Round numbers (one decimal place is enough) and briefly explain technical terms the first
+  time they appear ("RSI 78 – a value above 70 is considered overbought").
+- Do not water down the verdict. If the result is BUY, say so clearly – along with the risk.
+  If it is WAIT, explain what to wait for.
+- The "What would change the picture" section is the most useful part for the person, because
+  it turns a "no" into a plan.
+- Do not invent price targets or probabilities that do not follow from the data.
+- **Stick to the timing question.** The person wants a quick decision aid for the entry
+  timing – not general investment advice. So do not suggest alternative strategies such as a
+  savings plan, cost averaging or "buying in tranches", and do not lecture about
+  diversification, emergency funds, taxes or "timing doesn't work". Whoever uses this skill
+  knows the risks and has consciously chosen a one-off decision. The answer should answer the
+  question "buy now or not?", not a different one.

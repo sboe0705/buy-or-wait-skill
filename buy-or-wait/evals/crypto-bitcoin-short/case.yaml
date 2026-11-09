@@ -1,4 +1,4 @@
 schema_version: "1.1"
 name: crypto-bitcoin-short
 expected_outcome: |
-  Eine klare Empfehlung für Bitcoin (BTC-EUR) auf Basis aktueller Kursdaten mit Begründung, in Deutsch.
+  A clear recommendation for Bitcoin (BTC-EUR) based on current price data, with reasoning, in English.

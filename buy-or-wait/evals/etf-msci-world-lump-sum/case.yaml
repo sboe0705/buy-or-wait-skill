@@ -1,4 +1,4 @@
 schema_version: "1.1"
 name: etf-msci-world-lump-sum
 expected_outcome: |
-  Eine klare Empfehlung für den iShares Core MSCI World (z. B. EUNL.DE) auf Basis aktueller Kursdaten, mit Begründung und Hinweis, was die Lage ändern würde.
+  A clear recommendation for the iShares Core MSCI World (e.g. EUNL.DE) based on current price data, with reasoning and a note on what would change the picture.

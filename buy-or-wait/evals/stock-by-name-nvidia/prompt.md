@@ -5,4 +5,4 @@ timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]
 ---
 
-Soll ich jetzt bei Nvidia einsteigen? Hab gesehen, die ist in letzter Zeit ziemlich gefallen. Kaufen oder lieber warten?
+Should I get into Nvidia now? I've seen it has dropped quite a bit lately. Buy or rather wait?

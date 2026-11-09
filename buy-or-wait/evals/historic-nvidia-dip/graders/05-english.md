@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The answer is written in German.
+The answer is written in English.

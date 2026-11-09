@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Python 3.9 gibt es nur bis Ubuntu 24.04
+          # Python 3.9 is only available up to Ubuntu 24.04
           - python: "3.9"
             os: ubuntu-24.04
           - python: "3.x"
@@ -50,16 +50,16 @@ jobs:
           test ! -e "$target/buy-or-wait/evals"
           test -f "$target/buy-or-wait/LICENSE"
           test -f "$target/buy-or-wait/NOTICE"
-          ./install.sh --target "$target"            # erneut: überschreibt sauber
+          ./install.sh --target "$target"            # again: overwrites cleanly
           ./install.sh --target "$target" --uninstall
           test ! -e "$target/buy-or-wait"
           ./install.sh --target "$target" --uninstall # idempotent
 
       - name: Smoke test against Yahoo Finance
-        continue-on-error: true  # externe API – soll den Build nicht blockieren
+        continue-on-error: true  # external API – must not block the build
         run: |
           python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18 \
-            | python3 -c "import json,sys; d=json.load(sys.stdin); v=d['vorbewertung']['empfehlung']; print(v); sys.exit(v != 'NICHT KAUFEN')"
+            | python3 -c "import json,sys; d=json.load(sys.stdin); v=d['pre_assessment']['verdict']; print(v); sys.exit(v != \"DON'T BUY\")"
 
   package:
     name: Package skill
@@ -82,11 +82,11 @@ jobs:
           grep -qx 'buy-or-wait/SKILL.md' "$RUNNER_TEMP/files"
           grep -qx 'buy-or-wait/LICENSE' "$RUNNER_TEMP/files"
           grep -qx 'buy-or-wait/NOTICE' "$RUNNER_TEMP/files"
-          if grep -q '/evals/' "$RUNNER_TEMP/files"; then echo 'evals/ im Zip' >&2; exit 1; fi
+          if grep -q '/evals/' "$RUNNER_TEMP/files"; then echo 'evals/ in zip' >&2; exit 1; fi
 
-      # archive: false lädt die Datei direkt hoch statt sie in ein zweites Zip
-      # zu packen; das Artefakt heißt dann wie die Datei (buy-or-wait.zip)
-      # und kann direkt als Skill importiert werden.
+      # archive: false uploads the file directly instead of wrapping it in a
+      # second zip; the artifact is then named like the file (buy-or-wait.zip)
+      # and can be imported directly as a skill.
       - uses: actions/upload-artifact@v7
         with:
           path: dist/buy-or-wait.zip

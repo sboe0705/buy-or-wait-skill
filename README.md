@@ -1,17 +1,17 @@
 # buy-or-wait
 
-Ein [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview), der für eine Aktie, einen ETF oder eine Kryptowährung eine klare Einstiegsempfehlung gibt: **🟢 KAUFEN**, **🔴 NICHT KAUFEN** oder **🟡 ABWARTEN**.
+A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that gives a clear entry recommendation for a stock, ETF or cryptocurrency: **🟢 BUY**, **🔴 DON'T BUY** or **🟡 WAIT**.
 
-Grundlage sind echte Tageskurse von Yahoo Finance (kein API-Key nötig) und eine transparente, regelbasierte Chartanalyse: Trend (SMA200), Abstand zum SMA50 relativ zur Volatilität, RSI(14), Stabilisierung nach Dips, Volatilitätsregime und bei Aktien anstehende Quartalszahlen. Der Anlagehorizont liegt bei einigen Wochen bis Monaten.
+It is based on real daily prices from Yahoo Finance (no API key needed) and a transparent, rule-based chart analysis: trend (SMA200), distance to the SMA50 relative to volatility, RSI(14), stabilization after dips, volatility regime and, for stocks, upcoming earnings. The investment horizon is a few weeks to months.
 
-Beispielfragen:
+Example questions:
 
-- „Soll ich jetzt Nvidia kaufen?“
-- „Lohnt sich Bitcoin gerade?“
-- „Ist der MSCI World gerade teuer?“
-- „Hätte ich im Juni 2024 Nvidia kaufen sollen?“
+- "Should I buy Nvidia now?"
+- "Is Bitcoin worth it right now?"
+- "Is the MSCI World expensive at the moment?"
+- "Should I have bought Nvidia in June 2024?"
 
-> Keine Anlageberatung. Reine Kursanalyse ohne Fundamentaldaten oder News.
+> Not investment advice. Pure price analysis without fundamentals or news.
 
 ## Installation
 
@@ -21,21 +21,21 @@ Beispielfragen:
 ./install.sh
 ```
 
-Kopiert den Skill nach `~/.claude/skills/buy-or-wait` (bzw. `$CLAUDE_CONFIG_DIR/skills`). Weitere Optionen:
+Copies the skill to `~/.claude/skills/buy-or-wait` (or `$CLAUDE_CONFIG_DIR/skills`). More options:
 
 ```bash
-./install.sh --link        # Symlink statt Kopie, für die Entwicklung im Repo
-./install.sh --target DIR  # anderes Skills-Verzeichnis
-./install.sh --uninstall   # wieder entfernen
+./install.sh --link        # symlink instead of copy, for development in the repo
+./install.sh --target DIR  # different skills directory
+./install.sh --uninstall   # remove again
 ```
 
 ### Claude.ai / Claude Desktop
 
-Lade [`buy-or-wait.zip`](https://github.com/sboe0705/buy-or-wait-skill/releases/latest/download/buy-or-wait.zip) aus dem neuesten Release herunter und lade es in den Skill-Einstellungen von Claude hoch.
+Download [`buy-or-wait.zip`](https://github.com/sboe0705/buy-or-wait-skill/releases/latest/download/buy-or-wait.zip) from the latest release and upload it in Claude's skill settings.
 
-**Voraussetzung:** Python 3 (nur Standardbibliothek).
+**Requirement:** Python 3 (standard library only).
 
-## Analyse-Skript direkt nutzen
+## Using the analysis script directly
 
 ```bash
 python3 buy-or-wait/scripts/analyze.py NVDA
@@ -44,22 +44,22 @@ python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18
 python3 buy-or-wait/scripts/analyze.py --search "Rheinmetall"
 ```
 
-Die Ausgabe ist JSON mit Kennzahlen und einer Vorbewertung (`vorbewertung.empfehlung`, `score`, `signale`).
+The output is JSON with indicators and a pre-assessment (`pre_assessment.verdict`, `score`, `signals`).
 
-## Entwicklung
+## Development
 
 ```bash
 ./build.sh
 ```
 
-Prüft `SKILL.md` und die Skripte und baut `dist/buy-or-wait.zip`: den Skill-Ordner samt `LICENSE`, direkt als Skill importierbar. Der Dateiname ist versionsunabhängig, sodass `releases/latest/download/buy-or-wait.zip` immer auf den neuesten Build zeigt.
+Checks `SKILL.md` and the scripts and builds `dist/buy-or-wait.zip`: the skill folder including `LICENSE`, importable directly as a skill. The file name is version-independent, so `releases/latest/download/buy-or-wait.zip` always points to the latest build.
 
-Testfälle für Skill-Evals liegen unter `buy-or-wait/evals/` und werden nicht mit ausgeliefert. Ein Tag `v*` löst über GitHub Actions ein Release aus; `./release.sh` schlägt die nächste Version vor, prüft und pusht das Tag.
+Test cases for skill evals live in `buy-or-wait/evals/` and are not shipped. A `v*` tag triggers a release via GitHub Actions; `./release.sh` suggests the next version, runs the checks and pushes the tag.
 
 ## Support
 
-Wenn dir dieser Skill nützlich ist, kannst du seine Weiterentwicklung mit einem Kaffee unterstützen: [buymeacoffee.com/sboe0705](https://buymeacoffee.com/sboe0705) ☕
+If you find this skill useful, you can support its development with a coffee: [buymeacoffee.com/sboe0705](https://buymeacoffee.com/sboe0705) ☕
 
-## Lizenz
+## License
 
-[Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. Das Skill-Paket enthält `LICENSE` und `NOTICE`.
+[Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. The skill package contains `LICENSE` and `NOTICE`.

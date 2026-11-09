@@ -1,4 +1,4 @@
 schema_version: "1.1"
 name: stock-by-name-nvidia
 expected_outcome: |
-  Eine klare Empfehlung (KAUFEN, NICHT KAUFEN oder ABWARTEN) für NVDA, begründet mit aktuellen Kursdaten (Trend, RSI, Abstand zu Durchschnitten), plus konkreten Bedingungen, die die Lage ändern würden.
+  A clear recommendation (BUY, DON'T BUY or WAIT) for NVDA, justified with current price data (trend, RSI, distance to averages), plus concrete conditions that would change the picture.

@@ -1,8 +1,8 @@
 name: Release
 
-# Version-Tag pushen, um ein Release zu veröffentlichen, z. B.:
+# Push a version tag to publish a release, e.g.:
 #   git tag v1.0.0 && git push origin v1.0.0
-# Tags mit Bindestrich (z. B. v1.0.0-rc1) werden als Pre-Release markiert.
+# Tags with a hyphen (e.g. v1.0.0-rc1) are marked as pre-releases.
 on:
   push:
     tags: ["v*"]
