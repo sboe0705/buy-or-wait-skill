@@ -23,10 +23,8 @@ jobs:
       - name: Shellcheck
         run: shellcheck install.sh build.sh
 
-      - name: Build packages
-        run: ./build.sh "$TAG"
-        env:
-          TAG: ${{ github.ref_name }}
+      - name: Build zip
+        run: ./build.sh
 
       - name: Create GitHub release
         env:
@@ -35,7 +33,7 @@ jobs:
         run: |
           prerelease=""
           [[ "$TAG" == *-* ]] && prerelease="--prerelease"
-          gh release create "$TAG" dist/* \
+          gh release create "$TAG" dist/buy-or-wait.zip \
             --title "$TAG" \
             --generate-notes \
             --verify-tag \

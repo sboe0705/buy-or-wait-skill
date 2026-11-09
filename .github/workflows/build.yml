@@ -67,35 +67,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0  # für git describe
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
-      - name: Build packages
+      - name: Build zip
         run: ./build.sh
 
-      - name: Test install.sh from release bundle
+      - name: Check zip contents
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP"
-          unzip -q "$GITHUB_WORKSPACE"/dist/buy-or-wait-*.zip
-          ./buy-or-wait-*/install.sh --target "$RUNNER_TEMP/bundle-skills"
-          test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/SKILL.md"
-          test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/LICENSE"
-          test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/NOTICE"
+          unzip -l dist/buy-or-wait.zip
+          unzip -Z1 dist/buy-or-wait.zip > "$RUNNER_TEMP/files"
+          grep -qx 'buy-or-wait/SKILL.md' "$RUNNER_TEMP/files"
+          grep -qx 'buy-or-wait/LICENSE' "$RUNNER_TEMP/files"
+          grep -qx 'buy-or-wait/NOTICE' "$RUNNER_TEMP/files"
+          if grep -q '/evals/' "$RUNNER_TEMP/files"; then echo 'evals/ im Zip' >&2; exit 1; fi
 
       # archive: false lädt die Datei direkt hoch statt sie in ein zweites Zip
-      # zu packen; das Artefakt heißt dann wie die Datei (buy-or-wait.skill)
-      # und kann direkt in Claude hochgeladen werden.
+      # zu packen; das Artefakt heißt dann wie die Datei (buy-or-wait.zip)
+      # und kann direkt als Skill importiert werden.
       - uses: actions/upload-artifact@v7
         with:
-          path: dist/buy-or-wait.skill
-          archive: false
-          if-no-files-found: error
-      - uses: actions/upload-artifact@v7
-        with:
-          path: dist/buy-or-wait-*.zip
+          path: dist/buy-or-wait.zip
           archive: false
           if-no-files-found: error

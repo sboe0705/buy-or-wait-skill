@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
-# Prüft den buy-or-wait Skill und baut die Pakete nach dist/.
+# Prüft den buy-or-wait Skill und baut das Skill-Paket nach dist/.
 #
-#   ./build.sh [VERSION]
+#   ./build.sh
 #
 # Ergebnis:
-#   dist/buy-or-wait.skill            Skill-Paket (Zip) zum Hochladen in Claude
-#   dist/buy-or-wait-<VERSION>.zip    Skill + install.sh für die lokale Installation
-#   dist/SHA256SUMS                   Prüfsummen
-#
-# VERSION: Argument, sonst $VERSION, sonst `git describe`, sonst "dev".
+#   dist/buy-or-wait.zip   Skill-Ordner (mit LICENSE) als reproduzierbares Zip,
+#                          direkt als Skill importierbar
 set -euo pipefail
 
 SKILL_NAME="buy-or-wait"
@@ -16,10 +13,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$ROOT/$SKILL_NAME"
 DIST="$ROOT/dist"
 
-VERSION="${1:-${VERSION:-$(git -C "$ROOT" describe --tags --always --dirty 2>/dev/null || echo dev)}}"
-VERSION="${VERSION#v}"
-
-echo "🔍 Prüfe Skill ($SKILL_NAME, Version $VERSION)"
+echo "🔍 Prüfe Skill ($SKILL_NAME)"
 python3 - "$SKILL_DIR" "$SKILL_NAME" <<'EOF'
 import re, sys, pathlib
 skill_dir, name = pathlib.Path(sys.argv[1]), sys.argv[2]
@@ -53,22 +47,13 @@ python3 "$SKILL_DIR/scripts/analyze.py" --help >/dev/null
 find "$SKILL_DIR" -name __pycache__ -type d -prune -exec rm -rf {} +
 echo "  Skripte ok"
 
-echo "📦 Baue Pakete"
+echo "📦 Baue Paket"
 rm -rf "$DIST"
 mkdir -p "$DIST"
-python3 - "$ROOT" "$SKILL_NAME" "$DIST" "$VERSION" <<'EOF'
+python3 - "$ROOT" "$SKILL_NAME" "$DIST" <<'EOF'
 import sys, zipfile, pathlib
-root, name, dist, version = pathlib.Path(sys.argv[1]), sys.argv[2], pathlib.Path(sys.argv[3]), sys.argv[4]
+root, name, dist = pathlib.Path(sys.argv[1]), sys.argv[2], pathlib.Path(sys.argv[3])
 skill = root / name
-
-def skill_files():
-    for p in sorted(skill.rglob("*")):
-        rel = p.relative_to(root)
-        if not p.is_file() or "__pycache__" in rel.parts or p.suffix == ".pyc":
-            continue
-        if len(rel.parts) > 1 and rel.parts[1] == "evals":   # Testfälle nicht ausliefern
-            continue
-        yield p, rel
 
 def add(z, path, arcname):
     info = zipfile.ZipInfo(str(arcname), date_time=(1980, 1, 1, 0, 0, 0))  # reproduzierbar
@@ -76,23 +61,17 @@ def add(z, path, arcname):
     info.compress_type = zipfile.ZIP_DEFLATED
     z.writestr(info, path.read_bytes())
 
-# LICENSE liegt im Repo-Root und kommt beim Packen in den Skill-Ordner
-license_file = root / "LICENSE"
-
-with zipfile.ZipFile(dist / f"{name}.skill", "w") as z:
-    for p, rel in skill_files():
+with zipfile.ZipFile(dist / f"{name}.zip", "w") as z:
+    for p in sorted(skill.rglob("*")):
+        rel = p.relative_to(root)
+        if not p.is_file() or "__pycache__" in rel.parts or p.suffix == ".pyc":
+            continue
+        if len(rel.parts) > 1 and rel.parts[1] == "evals":   # Testfälle nicht ausliefern
+            continue
         add(z, p, rel)
-    add(z, license_file, pathlib.Path(name) / "LICENSE")
-
-bundle = f"{name}-{version}"
-with zipfile.ZipFile(dist / f"{bundle}.zip", "w") as z:
-    for p, rel in skill_files():
-        add(z, p, pathlib.Path(bundle) / rel)
-    add(z, license_file, pathlib.Path(bundle) / name / "LICENSE")
-    add(z, root / "install.sh", pathlib.Path(bundle) / "install.sh")
+    # LICENSE liegt im Repo-Root und kommt beim Packen in den Skill-Ordner
+    add(z, root / "LICENSE", pathlib.Path(name) / "LICENSE")
 EOF
 
-if command -v sha256sum >/dev/null; then SHA=(sha256sum); else SHA=(shasum -a 256); fi
-(cd "$DIST" && "${SHA[@]}" -- * > SHA256SUMS)
 ls -l "$DIST"
 echo "✅ Fertig"

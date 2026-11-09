@@ -14,7 +14,7 @@ buy-or-wait/
   evals/<case>/         Testfälle (case.yaml, prompt.md, graders/*.md), NICHT ausgeliefert
 LICENSE                 Apache-2.0; build.sh/install.sh packen sie in den Skill-Ordner
 install.sh              Lokale Installation nach ~/.claude/skills
-build.sh                Validierung + Pakete nach dist/
+build.sh                Validierung + dist/buy-or-wait.zip
 .github/workflows/      build.yml (CI), release.yml (Tag v* → GitHub Release)
 ```
 
@@ -52,7 +52,7 @@ Jeder Fall unter `buy-or-wait/evals/<name>/` besteht aus `case.yaml` (mit `expec
 
 ## Release
 
-Tag `vX.Y.Z` pushen; `release.yml` baut und veröffentlicht `dist/*`. Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
+Tag `vX.Y.Z` pushen; `release.yml` baut und veröffentlicht `dist/buy-or-wait.zip` (versionsunabhängiger Name). Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
 
 ## Git-Workflow
 

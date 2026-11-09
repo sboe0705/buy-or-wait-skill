@@ -31,7 +31,7 @@ Kopiert den Skill nach `~/.claude/skills/buy-or-wait` (bzw. `$CLAUDE_CONFIG_DIR/
 
 ### Claude.ai / Claude Desktop
 
-Lade `buy-or-wait.skill` aus dem [neuesten Release](https://github.com/sboe0705/buy-or-wait-skill/releases/latest) herunter und lade es in den Skill-Einstellungen von Claude hoch.
+Lade [`buy-or-wait.zip`](https://github.com/sboe0705/buy-or-wait-skill/releases/latest/download/buy-or-wait.zip) aus dem neuesten Release herunter und lade es in den Skill-Einstellungen von Claude hoch.
 
 **Voraussetzung:** Python 3 (nur Standardbibliothek).
 
@@ -49,14 +49,10 @@ Die Ausgabe ist JSON mit Kennzahlen und einer Vorbewertung (`vorbewertung.empfeh
 ## Entwicklung
 
 ```bash
-./build.sh [VERSION]
+./build.sh
 ```
 
-Prüft `SKILL.md` und die Skripte und baut nach `dist/`:
-
-- `buy-or-wait.skill`: Skill-Paket zum Hochladen
-- `buy-or-wait-<VERSION>.zip`: Skill plus `install.sh`
-- `SHA256SUMS`
+Prüft `SKILL.md` und die Skripte und baut `dist/buy-or-wait.zip`: den Skill-Ordner samt `LICENSE`, direkt als Skill importierbar. Der Dateiname ist versionsunabhängig, sodass `releases/latest/download/buy-or-wait.zip` immer auf den neuesten Build zeigt.
 
 Testfälle für Skill-Evals liegen unter `buy-or-wait/evals/` und werden nicht mit ausgeliefert. Ein Tag `v*` löst über GitHub Actions ein Release aus.
 
@@ -66,4 +62,4 @@ Wenn dir dieser Skill nützlich ist, kannst du seine Weiterentwicklung mit einem
 
 ## Lizenz
 
-[Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. Die Skill-Pakete enthalten `LICENSE` und `NOTICE`.
+[Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. Das Skill-Paket enthält `LICENSE` und `NOTICE`.
