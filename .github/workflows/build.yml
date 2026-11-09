@@ -5,33 +5,40 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      version:
-        description: Version für die Paketnamen
-        type: string
-        required: false
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    name: Test (Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Python 3.9 gibt es nur bis Ubuntu 24.04
+          - python: "3.9"
+            os: ubuntu-24.04
+          - python: "3.x"
+            os: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          fetch-depth: 0  # für git describe
+          python-version: ${{ matrix.python }}
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Check Python 3.9 syntax
+        run: |
+          for f in buy-or-wait/scripts/*.py; do
+            python3 -c "import ast, sys; ast.parse(open(sys.argv[1]).read(), feature_version=(3,9))" "$f"
+          done
 
       - name: Shellcheck
         run: shellcheck install.sh build.sh
 
-      - name: Build packages
-        run: ./build.sh "${{ inputs.version }}"
+      - name: Check analyze.py
+        run: python3 buy-or-wait/scripts/analyze.py --help >/dev/null
 
       - name: Test install.sh
         run: |
@@ -48,6 +55,27 @@ jobs:
           test ! -e "$target/buy-or-wait"
           ./install.sh --target "$target" --uninstall # idempotent
 
+      - name: Smoke test against Yahoo Finance
+        continue-on-error: true  # externe API – soll den Build nicht blockieren
+        run: |
+          python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18 \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); v=d['vorbewertung']['empfehlung']; print(v); sys.exit(v != 'NICHT KAUFEN')"
+
+  package:
+    name: Package skill
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # für git describe
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Build packages
+        run: ./build.sh
+
       - name: Test install.sh from release bundle
         run: |
           set -euo pipefail
@@ -58,14 +86,16 @@ jobs:
           test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/LICENSE"
           test -f "$RUNNER_TEMP/bundle-skills/buy-or-wait/NOTICE"
 
-      - name: Smoke test against Yahoo Finance
-        continue-on-error: true  # externe API – soll den Build nicht blockieren
-        run: |
-          python3 buy-or-wait/scripts/analyze.py NVDA --as-of 2024-06-18 \
-            | python3 -c "import json,sys; d=json.load(sys.stdin); v=d['vorbewertung']['empfehlung']; print(v); sys.exit(v != 'NICHT KAUFEN')"
-
-      - uses: actions/upload-artifact@v4
+      # archive: false lädt die Datei direkt hoch statt sie in ein zweites Zip
+      # zu packen; das Artefakt heißt dann wie die Datei (buy-or-wait.skill)
+      # und kann direkt in Claude hochgeladen werden.
+      - uses: actions/upload-artifact@v7
         with:
-          name: buy-or-wait-skill
-          path: dist/
+          path: dist/buy-or-wait.skill
+          archive: false
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        with:
+          path: dist/buy-or-wait-*.zip
+          archive: false
           if-no-files-found: error

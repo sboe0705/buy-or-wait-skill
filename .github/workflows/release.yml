@@ -1,5 +1,8 @@
 name: Release
 
+# Version-Tag pushen, um ein Release zu veröffentlichen, z. B.:
+#   git tag v1.0.0 && git push origin v1.0.0
+# Tags mit Bindestrich (z. B. v1.0.0-rc1) werden als Pre-Release markiert.
 on:
   push:
     tags: ["v*"]
@@ -8,19 +11,22 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-    with:
-      version: ${{ github.ref_name }}
-
   release:
-    needs: build
+    name: Publish release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          name: buy-or-wait-skill
-          path: dist
+          python-version: "3.x"
+
+      - name: Shellcheck
+        run: shellcheck install.sh build.sh
+
+      - name: Build packages
+        run: ./build.sh "$TAG"
+        env:
+          TAG: ${{ github.ref_name }}
 
       - name: Create GitHub release
         env:
@@ -30,6 +36,7 @@ jobs:
           prerelease=""
           [[ "$TAG" == *-* ]] && prerelease="--prerelease"
           gh release create "$TAG" dist/* \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "buy-or-wait $TAG" \
-            --generate-notes $prerelease
+            --title "$TAG" \
+            --generate-notes \
+            --verify-tag \
+            $prerelease
