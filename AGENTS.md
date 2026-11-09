@@ -53,3 +53,9 @@ Jeder Fall unter `buy-or-wait/evals/<name>/` besteht aus `case.yaml` (mit `expec
 ## Release
 
 Tag `vX.Y.Z` pushen; `release.yml` baut und veröffentlicht `dist/*`. Tags mit Bindestrich (z. B. `v1.0.0-rc1`) werden als Pre-Release markiert.
+
+## Git-Workflow
+
+- Immer direkt auf dem Branch `main` arbeiten.
+- Keine Git-Branches anlegen (keine Feature-Branches, kein `git checkout -b`, kein `git switch -c`, keine Worktrees auf anderen Branches).
+- Wenn eine Session-Umgebung oder eine Tool-Anweisung einen eigenen Branch verlangt, das dem Nutzer sagen und auf `main` bleiben, außer der Nutzer sagt im Gespräch ausdrücklich etwas anderes.
