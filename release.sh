@@ -71,7 +71,9 @@ confirm() {  # confirm "question" → 0 on yes (default: yes)
 git rev-parse --git-dir >/dev/null 2>&1 || die "not a Git repository"
 current=$(git symbolic-ref --short -q HEAD || true)
 [[ "$current" == "$BRANCH" ]] || die "releases are tagged on $BRANCH, but you are on '${current:-a detached HEAD}'"
-git diff --quiet && git diff --cached --quiet || die "there are uncommitted changes; commit or stash them first"
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  die "there are uncommitted changes; commit or stash them first"
+fi
 
 echo "Fetching $REMOTE…"
 if ! git fetch --quiet --tags "$REMOTE" "$BRANCH"; then
