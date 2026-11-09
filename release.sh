@@ -103,7 +103,7 @@ commits=$(git log --format='%h %s' "$range")
 [[ -n "$commits" ]] || die "no commits since $latest; nothing to release"
 echo
 echo "Commits since ${latest:-the beginning}:"
-sed 's/^/  /' <<<"$commits"
+while IFS= read -r line; do echo "  $line"; done <<<"$commits"
 
 # --- Suggest the next version ----------------------------------------------
 if [[ -z "$latest" ]]; then
