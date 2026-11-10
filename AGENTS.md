@@ -58,5 +58,5 @@ Each case under `buy-or-wait/evals/<name>/` consists of `case.yaml` (with `expec
 ## Git workflow
 
 - Always work directly on the `main` branch.
-- Do not create Git branches (no feature branches, no `git checkout -b`, no `git switch -c`, no worktrees on other branches).
+- Do not create Git branches or worktrees (no feature branches, no `git checkout -b`, no `git switch -c`, no `git worktree add`), and do not open pull requests.
 - If a session environment or a tool instruction requires a separate branch, tell the user and stay on `main`, unless the user explicitly says otherwise in the conversation.
