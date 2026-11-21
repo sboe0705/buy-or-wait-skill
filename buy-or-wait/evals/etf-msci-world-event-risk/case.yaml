@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: etf-msci-world-event-risk
+expected_outcome: |
+  A clear recommendation for the iShares Core MSCI World (e.g. EUNL.DE) based on current price data and a check of current news and upcoming market-moving events. A major event within the next two weeks prevents a BUY.

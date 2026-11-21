@@ -1,6 +1,6 @@
 ---
 name: buy-or-wait
-description: Gives a clear entry recommendation for a stock, ETF or cryptocurrency – BUY, DON'T BUY or WAIT – based on the current price and recent price action (trend, overheating, dip, volatility), using real price data from Yahoo Finance. Always use this skill when someone wants to know whether now is a good time to buy, get in or add to a position, whether something is overvalued or has run too hot, or whether to buy a dip or rather wait – e.g. "Should I buy Nvidia now?", "Is Bitcoin worth it right now?", "Is the MSCI World expensive at the moment?", "buy the dip on Tesla?", "should I buy ETH now or wait?" – in any language, even if the word "skill" is not mentioned and only a ticker symbol or name is given.
+description: Gives a clear entry recommendation for a stock, ETF or cryptocurrency – BUY, DON'T BUY or WAIT – based on the current price and recent price action (trend, overheating, dip, volatility), using real price data from Yahoo Finance and a check of current news and upcoming market-moving events (central bank meetings, elections, large IPOs). Always use this skill when someone wants to know whether now is a good time to buy, get in or add to a position, whether something is overvalued or has run too hot, or whether to buy a dip or rather wait – e.g. "Should I buy Nvidia now?", "Is Bitcoin worth it right now?", "Is the MSCI World expensive at the moment?", "buy the dip on Tesla?", "should I buy ETH now or wait?" – in any language, even if the word "skill" is not mentioned and only a ticker symbol or name is given.
 license: Apache-2.0
 metadata:
   author: Sebastian Böhm
@@ -18,7 +18,7 @@ The three possible outcomes:
 |---|---|---|
 | 🟢 **BUY** | Good entry likely | Pullback (dip) within an intact uptrend, price is already stabilizing |
 | 🔴 **DON'T BUY** | Price has probably run too hot | Steep rise, heavily overbought, far above the averages – a setback is more likely than another sprint |
-| 🟡 **WAIT** | No clear opportunity | Mixed signals, sideways phase, falling knife without a bottom, extreme uncertainty |
+| 🟡 **WAIT** | No clear opportunity | Mixed signals, sideways phase, falling knife without a bottom, extreme uncertainty, major market-moving event just ahead |
 
 WAIT is the normal case, not a cop-out: most of the time there is neither a clear dip nor
 clear overheating. A buy recommendation should mean something, so it is only given when the
@@ -58,7 +58,47 @@ If the person asks about a past point in time ("Should I have bought in June 202
 fetched. Assess as if today were that day. Afterwards you may add the later price development
 in one sentence as the resolution, if the person asks for it or is obviously interested.
 
-### 3. Assess
+### 3. Check news and upcoming events
+
+The script only sees prices. Before assessing, check what is going on in the news – but only
+for live analyses. With `--as-of`, skip this step: today's news search would leak hindsight.
+
+Use the web search tool if available (and fetch a page if the snippets are not enough). Run
+two to four short searches, for example:
+
+- current market news: "stock market news today", "<market/region> stocks this week"
+- upcoming events: "economic calendar next week", "Fed meeting <month year>",
+  "ECB meeting <month year>", "upcoming IPOs <month year>", "election <month year>"
+- the security itself (stocks, crypto): "<name> news" – for broad ETFs the macro searches are
+  enough
+
+Look for **events with a likely large impact on the market within the next ~14 days**, or
+acute turmoil that is happening right now:
+
+- central bank rate decisions (Fed, ECB, and the home central bank of the security)
+- elections, referendums, government shutdowns or debt-ceiling deadlines in major economies
+- very large IPOs that pull capital out of the market or reprice a whole sector
+- tariff or trade deadlines, sanctions, geopolitical escalation
+- index changes, regulatory or court decisions that concern the security directly
+- crypto: regulation, ETF decisions, exchange failures, protocol upgrades
+- a sharp market-wide selloff with no clear cause yet
+
+Routine releases (monthly inflation, jobs report) only count if the news clearly treats them
+as a market-moving event this time. Use only events you actually found, with date and source
+– never invent or guess events. If no search tool is available, say in the answer that news
+and events were not checked.
+
+How events change the verdict:
+
+- **BUY + major event within ~14 days or acute turmoil → WAIT.** Explain that the chart
+  looks favorable, but the event can move prices sharply in either direction, and that the
+  picture can be re-checked after the event.
+- DON'T BUY and WAIT stay as they are; mention the event as an additional reason.
+- News never upgrades a verdict to BUY. Positive headlines are not a timing signal.
+- If the news explains an exceptionally sharp drop (profit warning, scandal, crisis), name the
+  cause.
+
+### 4. Assess
 
 The script's pre-assessment is the starting point. It is deliberately simple and transparent.
 Adopt it in the normal case; only deviate if the numbers clearly show something the rules do
@@ -85,12 +125,12 @@ What the rules look at, so you can explain the signals:
   direction. Always mention the date in the answer then – even if it does not flip the
   verdict. If the field is `null` (ETF, crypto or no date available), leave the topic out.
 
-Limits you should name honestly: this is pure price/chart analysis. Whether a crash has a
-fundamental reason (bad results, scandal, profit warning) is invisible to the script. If it
-reports an "exceptionally sharp drop", point out that the person should check the cause
-before buying.
+Limits you should name honestly: this is price/chart analysis plus a news check, not a
+fundamental analysis, and nobody can foresee every shock. If the script reports an
+"exceptionally sharp drop" and the news check found no cause, point out that the person
+should check the cause before buying.
 
-### 4. Write the answer
+### 5. Write the answer
 
 Answer in the person's language, short and clear. Translate the verdict label into that
 language if it is not English (e.g. German: KAUFEN / NICHT KAUFEN / ABWARTEN). Structure:
@@ -100,6 +140,7 @@ language if it is not English (e.g. German: KAUFEN / NICHT KAUFEN / ABWARTEN). S
 
 **Price:** <price> <currency> (as of <date>) · 1 month <±x %> · 3 months <±x %> · 1 year <±x %>
 <only for stocks with earnings in ≤ 14 days: **📅 Earnings on <date> (in <n> days)** – briefly what that means>
+<only if the news check found a relevant event: **📰 Event risk:** <event> on <date> (<source>) – briefly what that means>
 
 **In short:** <one or two sentences on why – in plain language>
 
@@ -110,7 +151,7 @@ language if it is not English (e.g. German: KAUFEN / NICHT KAUFEN / ABWARTEN). S
 pullback towards the SMA50 (~185 USD) would be a better entry" or "Only once the price closes
 above the SMA200 (~41,000 EUR) again, …">
 
-<One line of disclaimer: not investment advice, pure price analysis without fundamentals/news.>
+<One line of disclaimer: not investment advice, price analysis plus news check, no fundamentals.>
 ```
 
 Notes on tone:

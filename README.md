@@ -2,7 +2,9 @@
 
 A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that gives a clear entry recommendation for a stock, ETF or cryptocurrency: **🟢 BUY**, **🔴 DON'T BUY** or **🟡 WAIT**.
 
-It is based on real daily prices from Yahoo Finance (no API key needed) and a transparent, rule-based chart analysis: trend (SMA200), distance to the SMA50 relative to volatility, RSI(14), stabilization after dips, volatility regime and, for stocks, upcoming earnings. The investment horizon is a few weeks to months.
+It is based on real daily prices from Yahoo Finance (no API key needed) and a transparent, rule-based chart analysis: trend (SMA200), distance to the SMA50 relative to volatility, RSI(14), stabilization after dips, volatility regime and, for stocks, upcoming earnings.
+
+For live analyses the skill also checks current news and upcoming market-moving events (central bank meetings, elections, large IPOs, geopolitical escalation) via web search. A major event within the next two weeks turns a BUY into WAIT; news never upgrades a verdict. The investment horizon is a few weeks to months.
 
 Example questions:
 
@@ -11,7 +13,7 @@ Example questions:
 - "Is the MSCI World expensive at the moment?"
 - "Should I have bought Nvidia in June 2024?"
 
-> Not investment advice. Pure price analysis without fundamentals or news.
+> Not investment advice. Price analysis plus news check, no fundamentals.
 
 ## Installation
 
