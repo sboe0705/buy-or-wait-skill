@@ -58,10 +58,6 @@ Checks `SKILL.md` and the scripts and builds `dist/buy-or-wait.zip`: the skill f
 
 Test cases for skill evals live in `buy-or-wait/evals/` and are not shipped. A `v*` tag triggers a release via GitHub Actions; `./release.sh` suggests the next version, runs the checks and pushes the tag.
 
-## Support
-
-If you find this skill useful, you can support its development with a coffee: [buymeacoffee.com/sboe0705](https://buymeacoffee.com/sboe0705) ☕
-
 ## License
 
 [Apache License 2.0](LICENSE) · Copyright 2026 Sebastian Böhm. The skill package contains `LICENSE` and `NOTICE`.

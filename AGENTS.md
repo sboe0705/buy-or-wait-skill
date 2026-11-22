@@ -9,7 +9,7 @@ The repo contains exactly one Claude Skill: `buy-or-wait`. It gives a timing rec
 ```
 buy-or-wait/
   SKILL.md              skill instructions (frontmatter + workflow), shipped
-  NOTICE                author, license, repo link, support link; shipped
+  NOTICE                author, license, repo link; shipped
   scripts/analyze.py    fetch price data, indicators + pre-assessment as JSON
   evals/<case>/         test cases (case.yaml, prompt.md, graders/*.md), NOT shipped
 LICENSE                 Apache-2.0; build.sh/install.sh put it into the skill folder
@@ -25,7 +25,7 @@ release.sh              suggest next version, check, push tag vX.Y.Z
 - **No dependencies:** `analyze.py` uses only the Python standard library. Do not add packages.
 - **JSON keys** in the script output (`pre_assessment`, `verdict`, `signals`, `next_earnings`, …) are referenced by `SKILL.md` and the smoke test in `build.yml`. If you change them, update both.
 - **SKILL.md rules** (checked by `build.sh`): `name: buy-or-wait`, `description` present, at most 1024 characters, no angle brackets; file under 500 lines. Also `license: Apache-2.0` and `metadata.author`.
-- **No links in `metadata`, no donation link in texts the agent reads** (`SKILL.md`, script output, future `references/`). Otherwise it ends up in the context and might be mentioned to users. The Buy Me a Coffee link lives only in `NOTICE`, `README.md` and `.github/FUNDING.yml`.
+- **No links in `metadata`.** Otherwise they end up in the context and might be mentioned to users.
 - **Do not duplicate LICENSE** into the skill folder: `build.sh` adds it when packing, `install.sh` when copying.
 - **Content guardrails of the skill:** it only answers the timing question. No savings-plan/tranche suggestions, no invented price targets. WAIT is the normal case. The evals check this; do not soften it.
 - **Shell scripts** must pass `shellcheck` (CI) and run with `set -euo pipefail`.
