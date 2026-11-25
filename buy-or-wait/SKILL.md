@@ -93,6 +93,10 @@ How events change the verdict:
 - **BUY + major event within ~14 days or acute turmoil → WAIT.** Explain that the chart
   looks favorable, but the event can move prices sharply in either direction, and that the
   picture can be re-checked after the event.
+- **Never hide a suppressed buy signal.** Whenever the price data alone points to BUY but the
+  news check changes the final verdict to WAIT or DON'T BUY, the answer must say so
+  prominently with the 🔔 line (see step 5): the chart gives a buy signal, which news
+  outweighs it, and when to re-check. The person should know a favorable entry is close.
 - DON'T BUY and WAIT stay as they are; mention the event as an additional reason.
 - News never upgrades a verdict to BUY. Positive headlines are not a timing signal.
 - If the news explains an exceptionally sharp drop (profit warning, scandal, crisis), name the
@@ -141,6 +145,7 @@ language if it is not English (e.g. German: KAUFEN / NICHT KAUFEN / ABWARTEN). S
 **Price:** <price> <currency> (as of <date>) · 1 month <±x %> · 3 months <±x %> · 1 year <±x %>
 <only for stocks with earnings in ≤ 14 days: **📅 Earnings on <date> (in <n> days)** – briefly what that means>
 <only if the news check found a relevant event: **📰 Event risk:** <event> on <date> (<source>) – briefly what that means>
+<only if the chart alone says BUY but news changed the verdict: **🔔 Buy signal on hold:** the price data alone gives a BUY signal – held back because of <event/news>; re-check after <date/condition>>
 
 **In short:** <one or two sentences on why – in plain language>
 
